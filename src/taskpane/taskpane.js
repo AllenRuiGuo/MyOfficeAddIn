@@ -8,6 +8,9 @@
 Office.onReady((info) => {
   if (info.host === Office.HostType.Word) {
     document.getElementById("insert-paragraph").onclick = () => tryCatch(insertParagraph);
+    document.getElementById("apply-style").onclick = () => tryCatch(applyStyle);
+    document.getElementById("apply-custom-style").onclick = () => tryCatch(applyCustomStyle);
+    document.getElementById("change-font").onclick = () => tryCatch(changeFont);
     document.getElementById("sideload-msg").style.display = "none";
     document.getElementById("app-body").style.display = "flex";
   }
@@ -30,4 +33,32 @@ async function tryCatch(callback) {
   } catch (error) {
     Console.error(error);
   }
+}
+
+async function applyStyle() {
+  await Word.run(async (context) => {
+    const firstParagraph = context.document.body.paragraphs.getFirst();
+    firstParagraph.styleBuiltIn = Word.Style.intenseReference;
+    await context.sync();
+  });
+}
+
+async function applyCustomStyle() {
+  await Word.run(async (context) => {
+    const lastParagraph = context.document.body.paragraphs.getLast();
+    lastParagraph.style = "MyCustomStyle";
+    await context.sync();
+  });
+}
+
+async function changeFont() {
+  await Word.run(async (context) => {
+    const sencondParagraph = context.document.body.paragraphs.getNext();
+    sencondParagraph.font.set({
+      name: "Courier New",
+      bold: true,
+      size: 18,
+    });
+    await context.sync();
+  });
 }
