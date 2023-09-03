@@ -78,3 +78,7 @@
 b {
     font-weight: bold;
 }
+
+#app-body {
+    display: none;
+}
