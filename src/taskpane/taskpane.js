@@ -4,7 +4,7 @@
  */
 
 /* global document, Office, Word */
-import { base64Image } from "base64Image";
+import { base64Image } from "../../base64Image";
 
 Office.onReady((info) => {
   if (info.host === Office.HostType.Word) {
@@ -18,6 +18,8 @@ Office.onReady((info) => {
     document.getElementById("insert-image").onclick = () => tryCatch(insertImage);
     document.getElementById("insert-html").onclick = () => tryCatch(insertHtml);
     document.getElementById("insert-table").onclick = () => tryCatch(insertTable);
+    document.getElementById("create-content-control").onclick = () => tryCatch(createContentControl);
+    document.getElementById("replace-content-in-control").onclick = () => tryCatch(replaceContentInControl);
     document.getElementById("sideload-msg").style.display = "none";
     document.getElementById("app-body").style.display = "flex";
   }
@@ -130,6 +132,26 @@ async function insertTable() {
       ["Sue", "719", "Havana"],
     ];
     sencondParagraph.insertTable(3, 3, Word.InsertLocation.after, tableData);
+    await context.sync();
+  });
+}
+
+async function createContentControl() {
+  await Word.run(async (context) => {
+    const serviceNameRange = context.document.getSelection();
+    const serviceNameContentControl = serviceNameRange.insertContentControl();
+    serviceNameContentControl.title = "Service Name";
+    serviceNameContentControl.tag = "serviceName";
+    serviceNameContentControl.appearance = "Tags";
+    serviceNameContentControl.color = "blue";
+    await context.sync();
+  });
+}
+
+async function replaceContentInControl() {
+  await Word.run(async (context) => {
+    const serviceNameContentControl = context.document.contentControls.getByTag("serviceName").getFirst();
+    serviceNameContentControl.insertText("Fabrikam Online Productivity Suite", Word.InsertLocation.replace);
     await context.sync();
   });
 }
